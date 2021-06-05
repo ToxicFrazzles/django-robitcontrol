@@ -1,2 +1,0 @@
--e ../
-channels_redis
