@@ -1,0 +1,2 @@
+-e ../
+channels_redis

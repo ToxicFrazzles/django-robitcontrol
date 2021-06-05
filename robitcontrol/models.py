@@ -21,3 +21,6 @@ class Robit(models.Model):
         max_length=64, unique=True,
         db_index=True, default=random_ident
     )
+
+    def __str__(self):
+        return self.name
