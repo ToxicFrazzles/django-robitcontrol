@@ -2,7 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 import json
 from .models import Robit
-from webhooksocket.models import Bridge
+import asyncio
 
 
 @database_sync_to_async
@@ -14,7 +14,7 @@ def bridge_from_robit(robit):
     return robit.update_bridge
 
 
-class SocketConsumer(AsyncWebsocketConsumer):
+class RobitSocketConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.key = None
@@ -75,3 +75,57 @@ class SocketConsumer(AsyncWebsocketConsumer):
             "type": "update",
             'message': message
         }))
+
+    async def command_event(self, event):
+        command_map = {
+            "forward": {"command": "motors", "left": 100, "right": 100},
+            "left": {"command": "motors", "left": -100, "right": 100},
+            "right": {"command": "motors", "left": 100, "right": -100},
+            "backward": {"command": "motors", "left": -100, "right": -100},
+            "stop": {"command": "motors", "left": 0, "right": 0}
+        }
+
+        payload = {
+            "type": "command",
+        }
+        payload.update(command_map[event["command"]])
+        await self.send(json.dumps(payload))
+
+
+class BrowserSocketConsumer(AsyncWebsocketConsumer):
+    def __init__(self):
+        super().__init__()
+        self.user = None
+        self.super_user = False
+
+    async def connect(self):
+        await self.accept()
+        self.user = self.scope["user"]
+        self.super_user = self.user.is_superuser or False
+
+    async def disconnect(self, code):
+        pass
+
+    async def receive(self, text_data=None, bytes_data=None):
+        try:
+            message = json.loads(text_data)
+        except json.JSONDecodeError:
+            await self.send(json.dumps({
+                "type": "error",
+                "message": "Payload was not valid JSON"
+            }))
+            return
+        if message["type"] == "command":
+            await self.channel_layer.group_send(
+                f"Robit{message['robit_id']}",
+                {
+                    "command": message["command"]
+                }
+            )
+            await asyncio.sleep(0.5)
+            await self.channel_layer.group_send(
+                f"Robit{message['robit_id']}",
+                {
+                    "command": "stop"
+                }
+            )

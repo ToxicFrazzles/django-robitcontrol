@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<input type="number" id="robot_id">
+<button id="fwd-btn">Forward</button>
+<button id="bck-btn">Backward</button>
+<button id="lft-btn">Left</button>
+<button id="rgt-btn">Right</button>
+
+
+<script>
+    function getSockURI(){
+        const secure = (document.location.protocol === "https:");
+        const host = new URL(document.location).host;
+        if(secure){
+            return "wss://" + host + {{sock_url}};
+        }else{
+            return "ws://" + host + {{sock_url}};
+        }
+    }
+    const sockURI = getSockURI();
+    const id_input = document.getElementById("robot_id");
+    function wsConnect(){
+        let ws = new WebSocket(sockURI);
+        ws.onopen = function (){
+            console.log("Connected");
+            document.getElementById('fwd-btn').onclick = function(){
+                ws.send(JSON.stringify({
+                    "type": "command",
+                    "robit_id": id_input.value,
+                    "command": "forward"
+                }))
+            };
+            document.getElementById('bck-btn').onclick = function(){
+                ws.send(JSON.stringify({
+                    "type": "command",
+                    "robit_id": id_input.value,
+                    "command": "backward"
+                }))
+            };
+            document.getElementById('lft-btn').onclick = function(){
+                ws.send(JSON.stringify({
+                    "type": "command",
+                    "robit_id": id_input.value,
+                    "command": "left"
+                }))
+            };
+            document.getElementById('rgt-btn').onclick = function(){
+                ws.send(JSON.stringify({
+                    "type": "command",
+                    "robit_id": id_input.value,
+                    "command": "right"
+                }))
+            };
+        };
+
+        ws.onmessage = function(e){
+            console.log('Message:', e.data);
+        };
+
+        ws.onclose = function (e){
+            console.log('Socket Closed. Reconnecting in 5 seconds');
+            setTimeout(function (){
+                wsConnect();
+            }, 5000);
+        };
+
+        ws.onerror = function (err){
+            console.log("Socket encountered error:", err.message, "Closing socket");
+            ws.close();
+        }
+    }
+
+    wsConnect();
+</script>
+{% endblock %}

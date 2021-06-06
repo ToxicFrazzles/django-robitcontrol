@@ -6,5 +6,6 @@ app_name = "robitcontrol"
 
 
 websocket_urlpatterns = [
-    path('robitsocket', consumers.SocketConsumer.as_asgi(), name='robitsocket')
+    path('robitsocket/', consumers.RobitSocketConsumer.as_asgi(), name='robitsocket'),
+    path('browsersocket/', consumers.BrowserSocketConsumer.as_asgi(), name='browsersocket')
 ]
