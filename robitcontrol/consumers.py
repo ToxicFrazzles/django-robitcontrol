@@ -119,6 +119,7 @@ class BrowserSocketConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 f"Robit{message['robit_id']}",
                 {
+                    "type": "command.event",
                     "command": message["command"]
                 }
             )
@@ -126,6 +127,7 @@ class BrowserSocketConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 f"Robit{message['robit_id']}",
                 {
+                    "type": "command.event",
                     "command": "stop"
                 }
             )
