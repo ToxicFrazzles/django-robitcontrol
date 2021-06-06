@@ -78,10 +78,10 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
 
     async def command_event(self, event):
         command_map = {
-            "forward": {"command": "motors", "left": 100, "right": 100},
-            "left": {"command": "motors", "left": -100, "right": 100},
-            "right": {"command": "motors", "left": 100, "right": -100},
-            "backward": {"command": "motors", "left": -100, "right": -100},
+            "forward": {"command": "motors", "left": 255, "right": 255},
+            "left": {"command": "motors", "left": -255, "right": 255},
+            "right": {"command": "motors", "left": 255, "right": -255},
+            "backward": {"command": "motors", "left": -255, "right": -255},
             "stop": {"command": "motors", "left": 0, "right": 0}
         }
 
