@@ -5,7 +5,8 @@ from . import consumers
 app_name = "robitcontrol"
 
 
-websocket_urlpatterns = [
+urlpatterns = [
     path('robitsocket/', consumers.RobitSocketConsumer.as_asgi(), name='robitsocket'),
     path('browsersocket/', consumers.BrowserSocketConsumer.as_asgi(), name='browsersocket')
 ]
+websocket_urlpatterns = urlpatterns
