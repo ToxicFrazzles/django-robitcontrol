@@ -24,6 +24,7 @@
         let ws = new WebSocket(sockURI);
         ws.onopen = function (){
             console.log("Connected");
+            connectInterval = 100;
             document.getElementById('fwd-btn').onclick = function(){
                 ws.send(JSON.stringify({
                     "type": "command",
