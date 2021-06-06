@@ -6,6 +6,6 @@ from django import views
 class Index(views.View):
     def get(self, request):
         context = {
-            "sock_url": "robitcontrol/" + reverse_lazy('browsersocket', urlconf='robitcontrol.routing')
+            "sock_url": "robitcontrol" + reverse_lazy('browsersocket', urlconf='robitcontrol.routing')
         }
         return render(request, 'robitcontrol/index.html', context=context)

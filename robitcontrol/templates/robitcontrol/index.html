@@ -12,13 +12,14 @@
         const secure = (document.location.protocol === "https:");
         const host = new URL(document.location).host;
         if(secure){
-            return "wss://" + host + {{sock_url}};
+            return "wss://" + host + "{{sock_url}}";
         }else{
-            return "ws://" + host + {{sock_url}};
+            return "ws://" + host + "{{sock_url}}";
         }
     }
     const sockURI = getSockURI();
     const id_input = document.getElementById("robot_id");
+    var connectInterval = 100;
     function wsConnect(){
         let ws = new WebSocket(sockURI);
         ws.onopen = function (){
@@ -58,10 +59,11 @@
         };
 
         ws.onclose = function (e){
-            console.log('Socket Closed. Reconnecting in 5 seconds');
+            console.log('Socket Closed. Reconnecting in', connectInterval/1000,'seconds');
             setTimeout(function (){
                 wsConnect();
-            }, 5000);
+            }, Math.min(30000, connectInterval));
+            connectInterval += connectInterval;
         };
 
         ws.onerror = function (err){
