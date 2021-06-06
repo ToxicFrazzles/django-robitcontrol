@@ -123,11 +123,3 @@ class BrowserSocketConsumer(AsyncWebsocketConsumer):
                     "command": message["command"]
                 }
             )
-            await asyncio.sleep(0.5)
-            await self.channel_layer.group_send(
-                f"Robit{message['robit_id']}",
-                {
-                    "type": "command.event",
-                    "command": "stop"
-                }
-            )
