@@ -1,11 +1,85 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    #fwd-btn {
+        grid-area: forward;
+    }
+    #lft-btn {
+        grid-area: left;
+    }
+    #rgt-btn {
+        grid-area: right;
+    }
+    #bck-btn {
+        grid-area: backward;
+    }
+    #shtdwn-btn {
+        grid-area: shutdown;
+    }
+    #enable-container {
+        grid-area: enable;
+        place-self: center stretch;
+    }
+    #controls {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap-reverse;
+        width: 100%;
+    }
+    .movement-control-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-template-areas:
+                ". forward ."
+                "left . right"
+                "enable backward shutdown";
+        max-width: 500px;
+        width: 100%;
+    }
+    .movement-control-grid button {
+        aspect-ratio: 1;
+    }
+    .robot-list {
+        min-width:200px;
+    }
+</style>
 <input type="number" id="robot_id">
-<button id="fwd-btn">Forward</button>
-<button id="bck-btn">Backward</button>
-<button id="lft-btn">Left</button>
-<button id="rgt-btn">Right</button>
+<div id="controls">
+    <div class="movement-control-grid">
+        <button id="fwd-btn">Forward</button>
+        <button id="bck-btn">Backward</button>
+        <button id="lft-btn">Left</button>
+        <button id="rgt-btn">Right</button>
+        {% if user.is_staff %}
+        <div id="enable-container">
+            <label for="enable">Enabled?</label><input type="checkbox" id="enable">
+        </div>
+        {% endif %}
+        {% if user.is_superuser %}
+        <button id="shtdwn-btn">Shutdown</button>
+        {% endif %}
+    </div>
+    <div class="robot-list">
+        <ul>
+            <li>Test Robot 1</li>
+            <li>Test Robot 2</li>
+            <li>Test Robot 3</li>
+            <li>Test Robot 4</li>
+            <li>Test Robot 5</li>
+            <li>Test Robot 6</li>
+            <li>Test Robot 7</li>
+            <li>Test Robot 8</li>
+            <li>Test Robot 9</li>
+            <li>Test Robot 10</li>
+            <li>Test Robot 11</li>
+            <li>Test Robot 12</li>
+            <li>Test Robot 13</li>
+            <li>Test Robot 14</li>
+        </ul>
+    </div>
+</div>
 
 <script>
     function getSockURI(){
@@ -20,39 +94,66 @@
     const sockURI = getSockURI();
     const id_input = document.getElementById("robot_id");
     var connectInterval = 100;
+    const fwdBtn = document.getElementById('fwd-btn');
+    const bckBtn = document.getElementById('bck-btn');
+    const lftBtn = document.getElementById('lft-btn');
+    const rgtBtn = document.getElementById('rgt-btn');
+    const enableCheck = document.getElementById('enable');
+    const shutdown = document.getElementById('shtdwn-btn');
     function wsConnect(){
         let ws = new WebSocket(sockURI);
         ws.onopen = function (){
             console.log("Connected");
             connectInterval = 100;
-            document.getElementById('fwd-btn').onclick = function(){
+            fwdBtn.onclick = function(){
                 ws.send(JSON.stringify({
                     "type": "command",
                     "robit_id": id_input.value,
                     "command": "forward"
                 }))
             };
-            document.getElementById('bck-btn').onclick = function(){
+            bckBtn.onclick = function(){
                 ws.send(JSON.stringify({
                     "type": "command",
                     "robit_id": id_input.value,
                     "command": "backward"
                 }))
             };
-            document.getElementById('lft-btn').onclick = function(){
+            lftBtn.onclick = function(){
                 ws.send(JSON.stringify({
                     "type": "command",
                     "robit_id": id_input.value,
                     "command": "left"
                 }))
             };
-            document.getElementById('rgt-btn').onclick = function(){
+            rgtBtn.onclick = function(){
                 ws.send(JSON.stringify({
                     "type": "command",
                     "robit_id": id_input.value,
                     "command": "right"
                 }))
             };
+
+            if(enableCheck !== null){
+                enableCheck.onchange = function(){
+                    ws.send(JSON.stringify({
+                        "type": "config",
+                        "robit_id": id_input.value,
+                        "option": "enable",
+                        "value": enableCheck.value
+                    }));
+                }
+            }
+            if(shutdown !== null){
+                shutdown.onchange = function (){
+                    ws.send(JSON.stringify({
+                        "type": "command",
+                        "robit_id": id_input.value,
+                        "command": "shutdown"
+                    }))
+                }
+            }
+
         };
 
         ws.onmessage = function(e){
@@ -63,8 +164,8 @@
             console.log('Socket Closed. Reconnecting in', connectInterval/1000,'seconds');
             setTimeout(function (){
                 wsConnect();
-            }, Math.min(30000, connectInterval));
-            connectInterval += connectInterval;
+            }, connectInterval);
+            connectInterval = Math.min(30000, connectInterval*2);
         };
 
         ws.onerror = function (err){

@@ -9,6 +9,7 @@ import asyncio
 def get_robit_by_key(key):
     return Robit.objects.get(key=key)
 
+
 @database_sync_to_async
 def bridge_from_robit(robit):
     return robit.update_bridge
@@ -82,7 +83,8 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
             "left": {"command": "motors", "left": -255, "right": 255},
             "right": {"command": "motors", "left": 255, "right": -255},
             "backward": {"command": "motors", "left": -255, "right": -255},
-            "stop": {"command": "motors", "left": 0, "right": 0}
+            "stop": {"command": "motors", "left": 0, "right": 0},
+            "shutdown": {"command": "shutdown"}
         }
 
         payload = {
@@ -116,6 +118,8 @@ class BrowserSocketConsumer(AsyncWebsocketConsumer):
             }))
             return
         if message["type"] == "command":
+            if message["command"] == "shutdown" and not self.super_user:
+                return
             await self.channel_layer.group_send(
                 f"Robit{message['robit_id']}",
                 {
