@@ -21,6 +21,8 @@ class Robit(models.Model):
         max_length=64, unique=True,
         db_index=True, default=random_ident
     )
+    available = models.BooleanField(default=False)
+    channel_name = models.CharField(max_length=64, unique=True, null=True, default=None)
 
     def __str__(self):
         return self.name
