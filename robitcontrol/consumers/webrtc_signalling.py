@@ -14,14 +14,14 @@ class WebRTCConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-        await self.channel_layer.group_send(
-            f"webrtc{self.stream_token}",
-            {
-                "type": "webrtc.event",
-                "text": '{"type": "info", "message": "Peer Connected"}',
-                "sender": self.channel_name
-            }
-        )
+        # await self.channel_layer.group_send(
+        #     f"webrtc{self.stream_token}",
+        #     {
+        #         "type": "webrtc.event",
+        #         "text": '{"type": "info", "message": "Peer Connected"}',
+        #         "sender": self.channel_name
+        #     }
+        # )
 
     async def disconnect(self, code):
         await self.channel_layer.group_discard(
