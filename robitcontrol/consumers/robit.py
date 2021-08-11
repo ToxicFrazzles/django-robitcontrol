@@ -71,8 +71,8 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
                 "type": "robot.available",
                 "cause": "connection",
                 "robot": {
-                    "ID": self.robit.id,
-                    "name": self.robit.name
+                    "ID": self.robit['id'],
+                    "name": self.robit['name']
                 }
             }
         )
