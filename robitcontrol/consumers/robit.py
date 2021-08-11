@@ -36,15 +36,15 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
     async def authenticate(self, message):
         await self.send(text_data='{"type": "info", "message": "Authentication started", "payload": ' + str(message) + '}')
         self.key = message["key"]
-        await self.send(text_data='{"type": "info", "message": "Uno"')
+        await self.send(text_data='{"type": "info", "message": "Uno"}')
         if len(self.key) < 64:
             await self.close(1008)
             return
-        await self.send(text_data='{"type": "info", "message": "Dos"')
+        await self.send(text_data='{"type": "info", "message": "Dos"}')
         if self.robit is not None:
             await self.close(4001)
             return
-        await self.send(text_data='{"type": "info", "message": "Three"')
+        await self.send(text_data='{"type": "info", "message": "Three"}')
         try:
             connect_data = await robit_connect_data(self.key, self.channel_name)
             self.robit = connect_data["robit"]
