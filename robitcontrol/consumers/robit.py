@@ -53,6 +53,11 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
         except Robit.DoesNotExist:
             await self.close(4000)
             return
+        except Exception as e:
+            await self.send(text_data="SHIT'S FUCKED M8!")
+            await self.send(text_data=str(e))
+            await self.close()
+            return
         await self.send(text_data='{"type": "info", "message": "Four"}')
         if self.bridge_group is not None:
             await self.channel_layer.group_add(
