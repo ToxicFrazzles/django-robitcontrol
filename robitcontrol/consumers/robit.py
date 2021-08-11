@@ -34,17 +34,13 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
         await robit_disconnect(self.robit["id"])
 
     async def authenticate(self, message):
-        await self.send(text_data='{"type": "info", "message": "Authentication started", "payload": "' + str(message) + '"}')
         self.key = message["key"]
-        await self.send(text_data='{"type": "info", "message": "Uno"}')
         if len(self.key) < 64:
             await self.close(1008)
             return
-        await self.send(text_data='{"type": "info", "message": "Dos"}')
         if self.robit is not None:
             await self.close(4001)
             return
-        await self.send(text_data='{"type": "info", "message": "Three"}')
         try:
             connect_data = await robit_connect_data(self.key, self.channel_name)
             # await self.send(text_data=json.dumps(connect_data))
@@ -53,18 +49,11 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
         except Robit.DoesNotExist:
             await self.close(4000)
             return
-        except Exception as e:
-            await self.send(text_data="SHIT'S FUCKED M8!")
-            await self.send(text_data=str(e))
-            await self.close()
-            return
-        await self.send(text_data='{"type": "info", "message": "Four"}')
         if self.bridge_group is not None:
             await self.channel_layer.group_add(
                 self.bridge_group,
                 self.channel_name
             )
-        await self.send(text_data='{"type": "info", "message": "Five"}')
         await self.channel_layer.group_send(
             f"RobotBrowser",
             {
