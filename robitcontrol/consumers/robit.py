@@ -34,7 +34,7 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
         await robit_disconnect(self.robit["id"])
 
     async def authenticate(self, message):
-        await self.send(text_data='{"type": "info", "message": "Authentication started"}')
+        await self.send(text_data='{"type": "info", "message": "Authentication started", "payload": ' + str(message) + '}')
         self.key = message["key"]
         if len(self.key) < 64:
             await self.close(1008)
