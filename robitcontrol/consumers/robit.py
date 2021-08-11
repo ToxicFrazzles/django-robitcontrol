@@ -34,7 +34,7 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
         await robit_disconnect(self.robit["id"])
 
     async def authenticate(self, message):
-        await self.send(text_data='{"type": "info", "message": "Authentication started", "payload": ' + str(message) + '}')
+        await self.send(text_data='{"type": "info", "message": "Authentication started", "payload": "' + str(message) + '"}')
         self.key = message["key"]
         await self.send(text_data='{"type": "info", "message": "Uno"}')
         if len(self.key) < 64:
@@ -52,11 +52,13 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
         except Robit.DoesNotExist:
             await self.close(4000)
             return
+        await self.send(text_data='{"type": "info", "message": "Four"}')
         if self.bridge_group is not None:
             await self.channel_layer.group_add(
                 self.bridge_group,
                 self.channel_name
             )
+        await self.send(text_data='{"type": "info", "message": "Five"}')
         await self.channel_layer.group_send(
             f"RobotBrowser",
             {
