@@ -1,3 +1,4 @@
 django
 django-channels
 git+https://github.com/ToxicFrazzles/django-webhooksocket.git
+-e ./

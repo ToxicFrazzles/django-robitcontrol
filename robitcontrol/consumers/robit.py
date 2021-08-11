@@ -47,6 +47,7 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
         await self.send(text_data='{"type": "info", "message": "Three"}')
         try:
             connect_data = await robit_connect_data(self.key, self.channel_name)
+            await self.send(text_data=json.dumps(connect_data))
             self.robit = connect_data["robit"]
             self.bridge_group = connect_data["bridge_group"]
         except Robit.DoesNotExist:
