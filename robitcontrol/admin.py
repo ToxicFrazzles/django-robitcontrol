@@ -3,7 +3,7 @@ from .models import Robit
 
 
 class RobitAdmin(admin.ModelAdmin):
-    fields = ('name', 'update_bridge', 'key')
+    fields = ('name', 'update_bridge', 'key', 'available')
     readonly_fields = ('key',)
 
 
