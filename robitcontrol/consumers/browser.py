@@ -80,14 +80,12 @@ class BrowserSocketConsumer(AsyncWebsocketConsumer):
         await self.send(text_data='{"type": "info", "message": "Selected robot"}')
 
     async def process_command(self, message: Dict):
-        await self.send(text_data='{"type": "info", "message": "Uno"}')
         if self.current_robot is None:
             await self.send(json.dumps({
                 "type": "error",
                 "message": "You need to select a robot first"
             }))
             return
-        await self.send(text_data='{"type": "info", "message": "Dos"}')
         if message["command"] == "shutdown" and self.super_user:
             await self.channel_layer.group_send(
                 self.current_robot["group"],
@@ -96,17 +94,13 @@ class BrowserSocketConsumer(AsyncWebsocketConsumer):
                 }
             )
         else:
-            try:
-                await self.channel_layer.group_send(
-                    self.current_robot["group"],
-                    {
-                        "type": "motor.command",
-                        "command": message["command"]
-                    }
-                )
-            except Exception as e:
-                await self.send(text_data='{"type": "info", "message": "' + str(e) + '"}')
-        await self.send(text_data='{"type": "info", "message": "Three"}')
+            await self.channel_layer.group_send(
+                self.current_robot["group"],
+                {
+                    "type": "motor.command",
+                    "command": message["command"]
+                }
+            )
 
     async def process_config(self, message: Dict):
         if message["option"] == "enable" and self.user.is_staff:
@@ -137,7 +131,11 @@ class BrowserSocketConsumer(AsyncWebsocketConsumer):
             "config": self.process_config,
             "select": self.select_robot
         }
-        await handler_map[message["type"]](message)
+        handler = handler_map.get(message["type"], None)
+        if handler is None:
+            print(message)
+        else:
+            await handler(message)
 
     async def robot_available(self, event):
         await self.send(json.dumps({

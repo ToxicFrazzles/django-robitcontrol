@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-$g7q1tga-(!h#o+rmf3o&xue9a$@1hp_92szyx)wxd*0h)4)!6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -70,8 +70,14 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'sample_project.wsgi.application'
+# WSGI_APPLICATION = 'sample_project.wsgi.application'
 ASGI_APPLICATION = 'sample_project.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

@@ -100,6 +100,7 @@
 
     function wsConnect(){
         ws = new WebSocket(sockURI);
+        let heartbeatInterval = null;
         ws.onopen = function (){
             console.log("Connected");
             connectInterval = 100;
@@ -151,7 +152,12 @@
                     }))
                 }
             }
-
+            heartbeatInterval = setInterval(function (){
+                ws.send(JSON.stringify({
+                    type: "info",
+                    message: "heartbeat"
+                }));
+            }, 5000);
         };
 
         ws.onmessage = function(e){
