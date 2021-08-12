@@ -133,16 +133,16 @@
                 }))
             };
 
-            if(enableCheck !== null){
-                enableCheck.onchange = function(){
-                    ws.send(JSON.stringify({
-                        "type": "config",
-                        // "robit_id": id_input.value,
-                        "option": "enable",
-                        "value": enableCheck.value
-                    }));
-                }
-            }
+            // if(enableCheck !== null){
+            //     enableCheck.onchange = function(){
+            //         ws.send(JSON.stringify({
+            //             "type": "config",
+            //             // "robit_id": id_input.value,
+            //             "option": "enable",
+            //             "value": enableCheck.value
+            //         }));
+            //     }
+            // }
             if(shutdown !== null){
                 shutdown.onchange = function (){
                     ws.send(JSON.stringify({

@@ -103,6 +103,12 @@ class BrowserSocketConsumer(AsyncWebsocketConsumer):
             )
 
     async def process_config(self, message: Dict):
+        if self.current_robot is None:
+            await self.send(json.dumps({
+                "type": "error",
+                "message": "You need to select a robot first"
+            }))
+            return
         if message["option"] == "enable" and self.user.is_staff:
             await self.channel_layer.group_send(
                 f"RobotBrowser",
@@ -110,8 +116,8 @@ class BrowserSocketConsumer(AsyncWebsocketConsumer):
                     "type": ("robot.available" if message["value"] else "robot.unavailable"),
                     "cause": "toggle",
                     "robot": {
-                        "ID": message["robit_id"],
-                        "name": (await get_robit_by_id(message["robit_id"])).name
+                        "ID": self.current_robot['id'],
+                        "name": self.current_robot['name']
                     }
                 }
             )
