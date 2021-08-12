@@ -105,28 +105,28 @@
             fwdBtn.onclick = function(){
                 ws.send(JSON.stringify({
                     "type": "command",
-                    "robit_id": id_input.value,
+                    // "robit_id": id_input.value,
                     "command": "forward"
                 }))
             };
             bckBtn.onclick = function(){
                 ws.send(JSON.stringify({
                     "type": "command",
-                    "robit_id": id_input.value,
+                    // "robit_id": id_input.value,
                     "command": "backward"
                 }))
             };
             lftBtn.onclick = function(){
                 ws.send(JSON.stringify({
                     "type": "command",
-                    "robit_id": id_input.value,
+                    // "robit_id": id_input.value,
                     "command": "left"
                 }))
             };
             rgtBtn.onclick = function(){
                 ws.send(JSON.stringify({
                     "type": "command",
-                    "robit_id": id_input.value,
+                    // "robit_id": id_input.value,
                     "command": "right"
                 }))
             };
@@ -135,7 +135,7 @@
                 enableCheck.onchange = function(){
                     ws.send(JSON.stringify({
                         "type": "config",
-                        "robit_id": id_input.value,
+                        // "robit_id": id_input.value,
                         "option": "enable",
                         "value": enableCheck.value
                     }));
@@ -145,7 +145,7 @@
                 shutdown.onchange = function (){
                     ws.send(JSON.stringify({
                         "type": "command",
-                        "robit_id": id_input.value,
+                        // "robit_id": id_input.value,
                         "command": "shutdown"
                     }))
                 }
