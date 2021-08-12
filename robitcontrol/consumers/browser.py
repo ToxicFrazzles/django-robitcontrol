@@ -77,6 +77,7 @@ class BrowserSocketConsumer(AsyncWebsocketConsumer):
             self.current_robot["group"],
             self.channel_name
         )
+        await self.send(text_data='{"type": "info", "message": "Selected robot"}')
 
     async def process_command(self, message: Dict):
         if self.current_robot is None:

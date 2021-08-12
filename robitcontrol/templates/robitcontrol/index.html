@@ -91,6 +91,7 @@
     let ws = null;
 
     function selectRobit(robit_id){
+        console.log("Selecting robot " + robit_id);
         ws.send(JSON.stringify({
             type: "select",
             id: robit_id
@@ -166,7 +167,7 @@
         };
 
         ws.onerror = function (err){
-            console.log("Socket encountered error:", err.message, "Closing socket");
+            console.log("Socket encountered error:", err, "Closing socket");
             ws.close();
         }
     }
