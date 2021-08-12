@@ -45,7 +45,6 @@
         min-width:200px;
     }
 </style>
-<input type="number" id="robot_id">
 <div id="controls">
     <div class="movement-control-grid">
         <button id="fwd-btn">Forward</button>
@@ -64,7 +63,7 @@
     <div class="robot-list">
         <ul>
             {% for robot in robots %}
-            <li class="robot" data-robot="{{robot.id}}">{{robot.name}}</li>
+            <li onclick="selectRobit({{robot.id}})">{{robot.name}}</li>
             {% endfor %}
         </ul>
     </div>
@@ -89,8 +88,17 @@
     const rgtBtn = document.getElementById('rgt-btn');
     const enableCheck = document.getElementById('enable');
     const shutdown = document.getElementById('shtdwn-btn');
+    let ws = null;
+
+    function selectRobit(robit_id){
+        ws.send(JSON.stringify({
+            type: "select",
+            id: robit_id
+        }));
+    }
+
     function wsConnect(){
-        let ws = new WebSocket(sockURI);
+        ws = new WebSocket(sockURI);
         ws.onopen = function (){
             console.log("Connected");
             connectInterval = 100;
