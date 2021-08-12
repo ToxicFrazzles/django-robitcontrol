@@ -54,6 +54,10 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
                 self.bridge_group,
                 self.channel_name
             )
+        await self.channel_layer.group_add(
+            f"Robit{self.robit['id']}",
+            self.channel_name
+        )
         await self.channel_layer.group_send(
             f"RobotBrowser",
             {
@@ -103,6 +107,7 @@ class RobitSocketConsumer(AsyncWebsocketConsumer):
         }
         payload.update(command_map[event["command"]])
         await self.send(json.dumps(payload))
+        print(payload)
 
     async def shutdown_command(self, event):
         await self.send(json.dumps({

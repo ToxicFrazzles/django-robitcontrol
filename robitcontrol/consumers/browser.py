@@ -46,11 +46,11 @@ class BrowserSocketConsumer(AsyncWebsocketConsumer):
                 f"RobotNonStaff",
                 self.channel_name
             )
-        if self.current_robot is not None:
-            await self.channel_layer.group_discard(
-                self.current_robot["group"],
-                self.channel_name
-            )
+        # if self.current_robot is not None:
+        #     await self.channel_layer.group_discard(
+        #         self.current_robot["group"],
+        #         self.channel_name
+        #     )
 
     async def select_robot(self, message: Dict):
         try:
@@ -67,16 +67,16 @@ class BrowserSocketConsumer(AsyncWebsocketConsumer):
                 "message": "robot with given ID is not online"
             }))
             return
-        if self.current_robot is not None:
-            await self.channel_layer.group_discard(
-                self.current_robot["group"],
-                self.channel_name
-            )
+        # if self.current_robot is not None:
+        #     await self.channel_layer.group_discard(
+        #         self.current_robot["group"],
+        #         self.channel_name
+        #     )
         self.current_robot = robit
-        await self.channel_layer.group_add(
-            self.current_robot["group"],
-            self.channel_name
-        )
+        # await self.channel_layer.group_add(
+        #     self.current_robot["group"],
+        #     self.channel_name
+        # )
         await self.send(text_data='{"type": "info", "message": "Selected robot"}')
 
     async def process_command(self, message: Dict):
