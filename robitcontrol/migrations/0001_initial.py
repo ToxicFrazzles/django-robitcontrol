@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=60)),
-                ('key', models.CharField(db_index=True, default=robitcontrol.models.random_ident, max_length=64, unique=True)),
+                ('key', models.CharField(db_index=True, default=robitcontrol.models.random_key, max_length=64, unique=True)),
                 ('update_bridge', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='webhooksocket.bridge')),
             ],
         ),

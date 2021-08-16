@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Robit
+from .models import Robit, WebRTCBrowser
 
 
 class RobitAdmin(admin.ModelAdmin):
@@ -7,4 +7,9 @@ class RobitAdmin(admin.ModelAdmin):
     readonly_fields = ('key', "channel_name")
 
 
+class WebRTCBrowserAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(WebRTCBrowser, WebRTCBrowserAdmin)
 admin.site.register(Robit, RobitAdmin)

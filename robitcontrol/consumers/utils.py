@@ -1,5 +1,5 @@
 from channels.db import database_sync_to_async
-from ..models import Robit
+from ..models import Robit, WebRTCBrowser
 
 
 @database_sync_to_async
@@ -12,6 +12,14 @@ def get_robit_by_id(robot_id):
         "available": robit.available,
         "channel": robit.channel_name
     }
+
+
+@database_sync_to_async
+def get_robit_by_key(key):
+    try:
+        return Robit.objects.get(key=key)
+    except Robit.DoesNotExist:
+        return None
 
 
 @database_sync_to_async
@@ -37,6 +45,14 @@ def robit_disconnect(robit_id):
     robit = Robit.objects.get(id=robit_id)
     robit.channel_name = None
     robit.save()
+
+
+@database_sync_to_async
+def get_webrtc_browser(token, key):
+    try:
+        return WebRTCBrowser.objects.get(token=token, key=key)
+    except WebRTCBrowser.DoesNotExist:
+        return None
 
 
 async def nop(*args, **kwargs):
