@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client</title>
+</head>
+<body id="body">
+<video playsinline autoplay></video>
+<script type="text/javascript">
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has("t") && urlParams.has("bt") && urlParams.has("bk")) {
+        const ws_url = `wss://blokegaming.com/robitcontrol/webrtcsignal/${urlParams.get("t")}/`;
+        const token = urlParams.get("bt");
+        const key = urlParams.get("bk");
+        const config = {iceServers: [{urls: 'stun:stun.blokegaming.com'}]};
+        const video = document.querySelector("video");
+        var pc = null;
+        let ws_errors = 0;
+
+
+        function prepare_negotiations() {
+            pc.addTransceiver("video", {direction: 'recvonly'});
+            return pc.createOffer().then(function (offer) {
+                return pc.setLocalDescription(offer);
+            }).then(function () {
+                // wait for ICE gathering to complete
+                return new Promise(function (resolve) {
+                    if (pc.iceGatheringState === 'complete') {
+                        resolve();
+                    } else {
+                        function checkState() {
+                            if (pc.iceGatheringState === 'complete') {
+                                pc.removeEventListener('icegatheringstatechange', checkState);
+                                resolve();
+                            }
+                        }
+
+                        pc.addEventListener('icegatheringstatechange', checkState);
+                    }
+                });
+            });
+        }
+
+
+        function ws_connect() {
+            pc = new RTCPeerConnection(config);
+            prepare_negotiations();
+            const ws = new WebSocket(ws_url);
+            let ws_connected = false;
+            let rtc_connected = false;
+
+            ws.onmessage = async function (event) {
+                let messageObj = JSON.parse(event.data);
+                // console.log(messageObj);
+                if (messageObj["type"] === "info" && messageObj["message"] === "Robit Connected") {
+                    console.log("Offering connection");
+                    ws.send(JSON.stringify({
+                        type: "webrtc_offer",
+                        SDP: pc.localDescription.sdp,
+                        SDP_type: pc.localDescription.type
+                    }));
+                } else if (messageObj["type"] === "heartbeat") {
+                } else if (messageObj["type"] === "webrtc_answer") {
+                    console.log("Answer!");
+                    await pc.setRemoteDescription({type: messageObj["SDP_type"], sdp: messageObj["SDP"]});
+                } else if (messageObj["type"] === "webrtc_ice_candidate") {
+
+                } else {
+                    console.log(messageObj);
+                }
+
+            };
+
+            let heartbeatInterval = setInterval(function () {
+                ws.send('{"type": "heartbeat"}');
+            }, 10000);
+
+            ws.onclose = function (ev) {
+                ws_connected = false;
+                console.log("Closed!")
+                if (!rtc_connected) {
+                    clearInterval(heartbeatInterval);
+                    setTimeout(ws_connect, 100 * ws_errors + 1);
+                }
+            };
+
+            ws.onerror = function (ev) {
+                ws_errors++;
+            };
+
+            ws.onopen = function () {
+                console.log("Open!")
+                ws_connected = true;
+
+                ws.send(JSON.stringify({
+                    type: "auth_browser",
+                    token: token,
+                    key: key
+                }));
+
+                ws.send('{"type": "info", "message": "Peer Connected"}');
+                ws_errors = 0;
+            };
+
+            pc.ontrack = event => {
+                video.srcObject = event.streams[0];
+            };
+
+            pc.oniceconnectionstatechange = function (ev) {
+                console.log(pc.iceConnectionState);
+                if (pc.iceConnectionState === "connected") {
+                    rtc_connected = true;
+                    clearInterval(heartbeatInterval);
+                    ws.close();
+                } else if (pc.iceConnectionState === "disconnected") {
+                    rtc_connected = false;
+                    setTimeout(ws_connect, 100 * ws_errors + 1);
+                }
+            };
+        }
+
+        ws_connect();
+    }else{
+        console.log('No token parameter found in the URL. The parameter name is "t"');
+        document.getElementById("body").innerHTML = '<h1>No token parameter found in the URL. The parameter name is "t"</h1>';
+    }
+</script>
+</body>
+</html>

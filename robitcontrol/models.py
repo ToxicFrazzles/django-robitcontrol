@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.templatetags.static import static
 import secrets
 import webhooksocket.models
 
@@ -44,3 +45,11 @@ class WebRTCBrowser(models.Model):
     name = models.CharField(max_length=60)
     token = models.CharField(max_length=TOKEN_LENGTH, default=random_token, unique=True, db_index=True)
     key = models.CharField(max_length=KEY_LENGTH, default=random_key)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    @property
+    def url(self):
+        return static("webrtc.html") + f"?t=<TOKEN>&bt={self.token}&bk={self.key}"
+
