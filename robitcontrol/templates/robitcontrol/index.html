@@ -44,28 +44,35 @@
     .robot-list {
         min-width:200px;
     }
+
+    .robit-option:hover {
+        background-color: darkcyan;
+    }
+    .robit-option.selected {
+        background-color: green;
+    }
 </style>
 <div id="twitch-embed"></div>
 <script src="https://embed.twitch.tv/embed/v1.js"></script>
 <div id="controls">
     <div class="movement-control-grid">
-        <button id="fwd-btn">Forward</button>
-        <button id="bck-btn">Backward</button>
-        <button id="lft-btn">Left</button>
-        <button id="rgt-btn">Right</button>
+        <button id="fwd-btn" disabled>Forward</button>
+        <button id="bck-btn" disabled>Backward</button>
+        <button id="lft-btn" disabled>Left</button>
+        <button id="rgt-btn" disabled>Right</button>
         {% if user.is_staff %}
 <!--        <div id="enable-container">-->
 <!--            <label for="enable">Enabled?</label><input type="checkbox" id="enable">-->
 <!--        </div>-->
         {% endif %}
         {% if user.is_superuser %}
-        <button id="shtdwn-btn">Shutdown</button>
+        <button id="shtdwn-btn" disabled>Shutdown</button>
         {% endif %}
     </div>
     <div class="robot-list">
         <ul>
             {% for robot in robots %}
-            <li onclick="selectRobit({{robot.id}})">{{robot.name}}</li>
+            <li class="robit-option" onclick="selectRobit({{robot.id}})" id="robit-{{robot.id}}">{{robot.name}}</li>
             {% endfor %}
         </ul>
     </div>
@@ -99,6 +106,7 @@
     const enableCheck = document.getElementById('enable');
     const shutdown = document.getElementById('shtdwn-btn');
     let ws = null;
+    let robotSelected = null;
 
     function selectRobit(robit_id){
         console.log("Selecting robot " + robit_id);
@@ -106,6 +114,17 @@
             type: "select",
             id: robit_id
         }));
+        robotSelected = robit_id;
+        let buttons = document.querySelectorAll("#controls button");
+        buttons.forEach(function(button){
+            button.disabled = false;
+        });
+
+        let listItems = document.querySelectorAll("#robot-list ul li");
+        listItems.forEach(function(item){
+            item.classList.remove("selected");
+        });
+        document.getElementById("robit-"+robit_id).classList.add("selected");
     }
 
     function wsConnect(){
