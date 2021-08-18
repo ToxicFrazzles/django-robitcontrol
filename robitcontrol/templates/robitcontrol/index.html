@@ -133,6 +133,10 @@
         ws.onopen = function (){
             console.log("Connected");
             connectInterval = 100;
+            if(robotSelected !== null){
+                // Select the previous robot if a reconnect event occurred
+                selectRobit(robotSelected);
+            }
             fwdBtn.onclick = function(){
                 ws.send(JSON.stringify({
                     "type": "command",
