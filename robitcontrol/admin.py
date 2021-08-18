@@ -8,7 +8,8 @@ class RobitAdmin(admin.ModelAdmin):
 
 
 class WebRTCBrowserAdmin(admin.ModelAdmin):
-    pass
+    fields = ('name', 'token', 'key', 'url')
+    readonly_fields = ('token', 'key', 'url')
 
 
 admin.site.register(WebRTCBrowser, WebRTCBrowserAdmin)
