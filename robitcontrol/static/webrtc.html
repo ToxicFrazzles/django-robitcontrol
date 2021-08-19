@@ -5,7 +5,8 @@
     <title>Client</title>
 </head>
 <body id="body">
-<video playsinline autoplay></video>
+<h1 style="margin: auto; position: absolute; top: 0; color: white">Connection Lost...</h1>
+<video id="stream" playsinline autoplay style="width: 100%; position: absolute; top: 0"></video>
 <script type="text/javascript">
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has("t") && urlParams.has("bt") && urlParams.has("bk")) {
@@ -109,10 +110,12 @@
             pc.oniceconnectionstatechange = function (ev) {
                 console.log(pc.iceConnectionState);
                 if (pc.iceConnectionState === "connected") {
+                    document.getElementById("stream").hidden = false;
                     rtc_connected = true;
                     clearInterval(heartbeatInterval);
                     ws.close();
                 } else if (pc.iceConnectionState === "disconnected") {
+                    document.getElementById("stream").hidden = true;
                     rtc_connected = false;
                     setTimeout(ws_connect, 100 * ws_errors + 1);
                 }
